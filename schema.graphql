@@ -139,7 +139,19 @@ type Vault @entity {
   wallet: Wallet!
   liquidatingAt: Date
   liquidatedAt: Date
+  liquidating: Boolean
   liquidated: Boolean
+  active: Boolean
+  closed: Boolean
+}
+
+type VaultsMetricsDaily @entity {
+  id: ID!
+  dateKey: Int! @index # YYYYMMDD format
+  numActiveVaultsLast: BigInt
+  numClosedVaultsLast: BigInt
+  numLiquidatingVaultsLast: BigInt
+  numLiquidatedVaultsLast: BigInt
 }
 
 type VaultManagerMetrics @entity {

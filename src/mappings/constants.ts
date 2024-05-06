@@ -24,6 +24,8 @@ export const EVENT_TYPES = {
 };
 
 export const VAULT_STATES = {
+  ACTIVE: "active",
+  CLOSED: "closed",
   LIQUIDATING: "liquidating",
   LIQUIDATED: "liquidated",
 };

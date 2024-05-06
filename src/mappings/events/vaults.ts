@@ -1,4 +1,4 @@
-import { VaultManagerMetrics, VaultManagerMetricsDaily, VaultManagerGovernance, Wallet, Vault } from "../../types";
+import { VaultsMetricsDaily, VaultManagerMetrics, VaultManagerMetricsDaily, VaultManagerGovernance, Wallet, Vault } from "../../types";
 import { VAULT_STATES } from "../constants";
 import { dateToDayKey, extractBrand } from "../utils";
 
@@ -47,6 +47,12 @@ export const vaultsEventKit = (block: any, data: any, module: string, path: stri
 
   async function saveVaults(payload: any): Promise<Promise<any>[]> {
     let vault = await Vault.get(path);
+    let active = 0;
+    let closed = 0;
+    let liquidating = 0;
+    let liquidated = 0;
+
+
     if (!vault) {
       vault = new Vault(path, BigInt(data.blockHeight), block.block.header.time as any, "");
     }
@@ -60,13 +66,49 @@ export const vaultsEventKit = (block: any, data: any, module: string, path: stri
 
     if (vault.state === VAULT_STATES.LIQUIDATING && !vault.liquidatingAt) {
       vault.liquidatingAt = block.block.header.time;
+      vault.liquidating = true;
+      liquidating = 1;
     }
 
     if (vault.state === VAULT_STATES.LIQUIDATED && !vault.liquidatedAt) {
       vault.liquidatedAt = block.block.header.time;
       vault.liquidated = true;
+      liquidated = 1;
     }
-    return [vault.save()];
+
+    if (vault.state === VAULT_STATES.ACTIVE && !vault.active) {
+      vault.active = true;
+      active = 1;
+    }
+
+    if (vault.state === VAULT_STATES.CLOSED && !vault.closed) {
+      vault.closed = true;
+      closed = 1;
+    }
+
+    const metrics = saveVaultsMetricsDaily(active, closed, liquidated, liquidating);
+
+    return [metrics, vault.save()];
+  }
+
+  async function saveVaultsMetricsDaily(active: number, closed: number, liquidated: number, liquidating: number): Promise<any> {
+    const dateKey = dateToDayKey(block.block.header.time);
+    const metrics = await getVaultsMetricsDaily(dateKey);
+    metrics.numActiveVaultsLast = BigInt(active) + BigInt(metrics.numActiveVaultsLast ?? 0);
+    metrics.numClosedVaultsLast = BigInt(closed) + BigInt(metrics.numClosedVaultsLast ?? 0);
+    metrics.numLiquidatedVaultsLast = BigInt(liquidated) + BigInt(metrics.numLiquidatedVaultsLast ?? 0);
+    metrics.numLiquidatingVaultsLast = BigInt(liquidating) + BigInt(metrics.numLiquidatingVaultsLast ?? 0);
+    return metrics.save();
+  }
+
+  async function getVaultsMetricsDaily(dateKey: number): Promise<VaultsMetricsDaily> {
+    const id = `vaults:${dateKey}`;
+    let state = await VaultsMetricsDaily.get(id);
+    if (!state) {
+      state = new VaultsMetricsDaily(id, dateKey);
+      return state;
+    }
+    return state;
   }
 
   async function saveVaultManagerMetrics(payload: any): Promise<Promise<any>[]> {
