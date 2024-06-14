@@ -1,11 +1,11 @@
-import { StateChangeEvent, IBCChannel, IBCTransfer, TransferType } from '../types';
-import { CosmosEvent } from '@subql/types-cosmos';
+import { StateChangeEvent, IBCChannel, IBCTransfer, TransferType, Balances } from '../types';
+import { CosmosBlock, CosmosEvent } from '@subql/types-cosmos';
 import {
   b64decode,
   extractStoragePath,
   getStateChangeModule,
   resolveBrandNamesAndValues,
-  getEscrowAddress,
+  getEscrowAddress
 } from './utils';
 
 import {
@@ -23,12 +23,25 @@ import {
   PACKET_DST_PORT_KEY,
   PACKET_SRC_PORT_KEY,
   TRANSFER_PORT_VALUE,
+  BALANCE_FIELDS,
+  FETCH_ACCOUNTS_URL,
+  GENESIS_URL,
 } from './constants';
 import { psmEventKit } from './events/psm';
 import { boardAuxEventKit } from './events/boardAux';
 import { priceFeedEventKit } from './events/priceFeed';
 import { vaultsEventKit } from './events/vaults';
 import { reservesEventKit } from './events/reserves';
+import {
+  AccountsResponse,
+  BaseAccount,
+  ModuleAccount,
+  BalancesResponse,
+  Balance,
+  VestingAccount,
+} from './custom-types';
+import { Operation, balancesEventKit } from './events/balances';
+import crossFetch from 'cross-fetch';
 
 // @ts-ignore
 BigInt.prototype.toJSON = function () {
@@ -242,3 +255,124 @@ export async function handleStateChangeEvent(cosmosEvent: CosmosEvent): Promise<
 
   await Promise.allSettled(recordSaves);
 }
+
+export const handleBalanceEvent = async (cosmosEvent: CosmosEvent): Promise<void> => {
+  const { event } = cosmosEvent;
+
+  const incrementEventTypes = [EVENT_TYPES.COIN_RECEIVED];
+  const decrementEventTypes = [EVENT_TYPES.COIN_SPENT];
+
+  let operation: Operation | null = null;
+
+  if (incrementEventTypes.includes(event.type)) {
+    operation = Operation.Increment;
+  } else if (decrementEventTypes.includes(event.type)) {
+    operation = Operation.Decrement;
+  } else {
+    logger.warn(`${event.type} is not a valid balance event.`);
+    return;
+  }
+
+  logger.info(`Event:${event.type}`);
+  logger.info(`Event Data:${JSON.stringify(cosmosEvent.event)}`);
+
+  const balancesKit = balancesEventKit();
+  const data = balancesKit.getData(cosmosEvent);
+  logger.info(`Decoded Data:${JSON.stringify(data)}`);
+
+  const address = balancesKit.getAttributeValue(data, BALANCE_FIELDS[event.type as keyof typeof BALANCE_FIELDS]);
+
+  const transactionAmount = balancesKit.getAttributeValue(data, BALANCE_FIELDS.amount);
+
+  if (!address) {
+    logger.error('Address is missing or invalid.');
+    return;
+  }
+
+  const { isValidTransaction, coins } = balancesKit.validateTransaction(transactionAmount);
+
+  if (!transactionAmount || !isValidTransaction) {
+    logger.error(`Amount ${transactionAmount} invalid.`);
+    return;
+  }
+
+  for (let { denom, amount } of coins) {
+    const entryExists = await balancesKit.addressExists(address, denom);
+
+    if (!entryExists) {
+      const primaryKey = address + denom;
+      await balancesKit.createBalancesEntry(address, denom, primaryKey);
+    }
+
+    const formattedAmount = BigInt(Math.round(Number(amount.slice(0, -4))));
+    await balancesKit.updateBalance(address, denom, formattedAmount, operation);
+  }
+};
+
+const fetchAccounts = async (
+  offset: string,
+  limit: string,
+): Promise<[(BaseAccount | ModuleAccount | VestingAccount)[], string | null]> => {
+  try {
+    const url = new URL(FETCH_ACCOUNTS_URL);
+    url.searchParams.append('pagination.limit', limit);
+    url.searchParams.append('pagination.offset', offset);
+
+    const response = await crossFetch(url.toString());
+    const parsedResponse: AccountsResponse = await response.json();
+
+    const accounts: (BaseAccount | ModuleAccount | VestingAccount)[] = parsedResponse.accounts;
+
+    return [accounts, parsedResponse.pagination.next_key];
+  } catch (error) {
+    logger.error(`Error fetching accounts: ${error}`);
+    return [[], ''];
+  }
+};
+
+const findAddress = (obj: any) => {
+  let stack = [obj];
+
+  while (stack.length > 0) {
+    let current = stack.pop();
+
+    if (typeof current !== 'object' || current === null) {
+      continue;
+    }
+
+    for (let key in current) {
+      if (key === 'address') {
+        return current[key];
+      } else if (typeof current[key] === 'object') {
+        stack.push(current[key]);
+      }
+    }
+  }
+
+  return null;
+};
+
+export const initiateBalancesTable = async (block: CosmosBlock): Promise<void> => {
+  try {
+    logger.info(`Initiating Balances Table`);
+    const response = await crossFetch(GENESIS_URL);
+    const parsedResponse = await response.json();
+    const data = parsedResponse.genesis.app_state.bank;
+
+    for (let element of data.balances) {
+      let newBalance;
+      for (const coin of element.coins) {
+        newBalance = new Balances(`${element.address}-${coin.denom}`);
+        newBalance.address = element.address;
+        newBalance.balance = BigInt(coin.amount);
+        newBalance.denom = coin.denom;
+
+        await newBalance.save();
+      }
+    }
+
+    logger.info(`Balances Table Initiated`);
+  } catch (error) {
+    logger.error(`Error initiating balances table: ${error}`);
+  }
+};

@@ -21,7 +21,9 @@ const project: CosmosProject = {
   },
   network: {
     // chainId: "agoriclocal",
-    // endpoint: ["http://host.docker.internal:26657/"],
+    // endpoint: ["http://agoric-subql_agd_1:26657/"],
+    // chainId: "agoric-emerynet-8",
+    // endpoint: ["https://emerynet.rpc.agoric.net:443"],
     chainId: "agoric-3",
     endpoint: ["https://main-a.rpc.agoric.net:443"],
 
@@ -50,6 +52,20 @@ const project: CosmosProject = {
     ]),
   },
   dataSources: [
+    {
+      kind: CosmosDatasourceKind.Runtime,
+      startBlock: 7179262,
+      endBlock: 7179262,
+      mapping: {
+        file: "./dist/index.js",
+        handlers: [
+          {
+            kind: CosmosHandlerKind.Block,
+            handler: "initiateBalancesTable",
+          },
+        ],
+      },
+    },
     {
       kind: CosmosDatasourceKind.Runtime,
       // First block of mainnet is 2115669
@@ -105,6 +121,20 @@ const project: CosmosProject = {
             kind: CosmosHandlerKind.Event,
             filter: {
               type: "state_change",
+            },
+          },
+          {
+            handler: "handleBalanceEvent",
+            kind: CosmosHandlerKind.Event,
+            filter: {
+              type: "coin_received",
+            },
+          },
+          {
+            handler: "handleBalanceEvent",
+            kind: CosmosHandlerKind.Event,
+            filter: {
+              type: "coin_spent",
             },
           },
         ],

@@ -303,3 +303,10 @@ type VaultStatesDaily @entity {
   liquidated: BigInt!
   liquidatedClosed: BigInt!
 }
+
+type Balances @entity {
+  id: ID!
+  address: String @index
+  balance: BigInt
+  denom: String @index
+}

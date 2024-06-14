@@ -48,6 +48,30 @@ export const IBC_MESSAGE_TRANSFER_VALUE = b64encode('/ibc.applications.transfer.
 export const IBC_MESSAGE_RECEIVE_PACKET_VALUE = b64encode('/ibc.core.channel.v1.MsgRecvPacket');
 export const RECEPIENT_KEY = b64encode('recipient');
 export const SENDER_KEY = b64encode('sender');
+export const SPENDER_KEY = b64encode('spender');
 export const RECEIVER_KEY = b64encode('receiver');
 export const AMOUNT_KEY = b64encode('amount');
 export const TRANSFER_PORT_VALUE = 'transfer';
+
+export const BALANCE_FIELDS = {
+  amount: 'amount',
+  // Bank Events
+  coinbase: 'minter',
+  coin_received: 'receiver',
+  coin_spent: 'spender',
+  transfer_recipient: 'recipient',
+  transfer_sender: 'sender',
+  burn: 'burner',
+  // Distribution Events
+  rewards: 'validator',
+  commission: 'validator',
+  proposer_reward: 'validator',
+  withdraw_rewards: 'validator',
+  withdraw_commission: 'validator',
+};
+
+export const FETCH_ACCOUNTS_URL = 'https://main-a.api.agoric.net:443/cosmos/auth/v1beta1/accounts';
+export const GET_FETCH_BALANCE_URL = (address: string) =>
+  `https://main-a.api.agoric.net:443/cosmos/bank/v1beta1/balances/${address}`;
+
+export const GENESIS_URL = 'https://agoric-rpc.polkachu.com/genesis';
