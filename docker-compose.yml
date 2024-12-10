@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   postgres:
     build:
@@ -12,15 +10,38 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
+      retries: 5
+
+  agd:
+    # cf. https://github.com/Agoric/agoric-3-proposals
+    image: ghcr.io/agoric/agoric-3-proposals:latest
+    platform: linux/amd64
+    ports:
+      - 26656:26656
+      - 26657:26657
+      - 1317:1317
+    environment:
+      DEST: 1
+      DEBUG: 'SwingSet:ls,SwingSet:vat'
+      # SLOGFILE: '~/logs.slog'
+    volumes:
+      - .:/workspace
+    entrypoint: /workspace/scripts/run-chain.sh
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:26657/status']
+      interval: 5s
+      timeout: 10s
       retries: 5
 
   subquery-node:
     image: subquerynetwork/subql-node-cosmos:latest
     depends_on:
-      "postgres":
+      postgres:
+        condition: service_healthy
+      agd:
         condition: service_healthy
     restart: always
     environment:
@@ -40,7 +61,7 @@ services:
       # - --log-level=debug
       # - --unfinalized-blocks=true
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://subquery-node:3000/ready"]
+      test: ['CMD', 'curl', '-f', 'http://subquery-node:3000/ready']
       interval: 3s
       timeout: 5s
       retries: 10
@@ -50,9 +71,9 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      "postgres":
+      postgres:
         condition: service_healthy
-      "subquery-node":
+      subquery-node:
         condition: service_healthy
     restart: always
     environment:
