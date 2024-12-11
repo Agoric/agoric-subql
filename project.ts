@@ -20,10 +20,10 @@ const project: CosmosProject = {
     file: './schema.graphql',
   },
   network: {
-    // chainId: "agoriclocal",
-    // endpoint: ["http://host.docker.internal:26657/"],
-    chainId: 'agoric-3',
-    endpoint: ['https://main-a.rpc.agoric.net:443'],
+    chainId: "agoriclocal",
+    endpoint: ["http://host.docker.internal:26657/"],
+    //chainId: 'agoric-3',
+    //endpoint: ['https://main-a.rpc.agoric.net:443'],
 
     chaintypes: new Map([
       [
@@ -66,7 +66,7 @@ const project: CosmosProject = {
       // startBlock: 13017175,
       // startBlock: 2115669,
       // Upgrade 8 (launch of Inter Protocol)
-      startBlock: 7179262,
+      startBlock: 1,
 
       mapping: {
         file: './dist/index.js',
