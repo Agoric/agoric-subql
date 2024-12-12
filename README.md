@@ -106,3 +106,19 @@ The fastest way to get support is by [searching our documentation](https://acade
 - storage
 - submit_proposal
 - transfer
+
+## Developing
+
+### Locally
+
+1. Start up an A3P instance:
+
+```sh
+docker run -p 26657:26657 -p 1317:1317 -p 9090:9090 ghcr.io/agoric/agoric-3-proposals:latest
+```
+
+2. Browse it with [vstorage viewer](https://vstorage.agoric.net/?endpoint=http%3A%2F%2Flocalhost%3A26657)
+
+3. Update tests to verify some observations you've made in the vstorage viewer
+
+4. Run `yarn test`

@@ -3,9 +3,13 @@ on:
   pull_request:
 
 jobs:
-  pr:
+  test:
     runs-on: ubuntu-latest
     services:
+      a3p:
+        image: ghcr.io/agoric/agoric-3-proposals:latest
+        ports:
+          - 26657:26657
       postgres:
         image: postgres:16-alpine
         ports:
@@ -41,10 +45,13 @@ jobs:
       - run: yarn tsc
       - name: Build
         run: yarn build
-      # TODO: https://github.com/Agoric/agoric-subql/issues/8
+        env:
+          AGORIC_NET: local
+
+      # Runtime tests using the db
       - name: Enable btree btree_gist
         run: psql "postgresql://$DB_USER:$DB_PASS@$DB_HOST:$DB_PORT/$DB_DATABASE" -c "CREATE EXTENSION IF NOT EXISTS btree_gist;"
-      # - name: Install subql-node-cosmos
-      #   run: yarn global add @subql/node-cosmos
-      # - name: Run tests with Subquery Node
-      #   run: subql-node-cosmos test -f ${{ github.workspace }}
+      - name: Run tests with Subquery Node
+        env:
+          TZ: UTC # prevents: Environment Timezone is not set to UTC. This may cause issues with indexing or proof of index
+        run: yarn subql-node-cosmos test -f ${{ github.workspace }}
