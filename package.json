@@ -25,7 +25,7 @@
   "devDependencies": {
     "@cosmjs/stargate": "^0.28.9",
     "@subql/cli": "^5.4.0",
-    "@subql/node-cosmos": "^4.2.1",
+    "@subql/node-cosmos": "4.2.1",
     "@subql/testing": "latest",
     "prettier": "^3.4.2",
     "starknet": "6.11.0",

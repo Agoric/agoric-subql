@@ -126,9 +126,9 @@ export const vaultsEventKit = (block: any, data: any, module: string, path: stri
 
     vault.coin = payload?.locked?.__brand;
     vault.denom = payload?.locked?.__brand;
-    vault.debt = payload?.debtSnapshot?.debt?.__value;
-    vault.balance = payload?.locked?.__value;
-    vault.lockedValue = payload?.locked?.__value;
+    vault.debt = BigInt(payload?.debtSnapshot?.debt?.__value);
+    vault.balance = BigInt(payload?.locked?.__value);
+    vault.lockedValue = BigInt(payload?.locked?.__value);
     vault.state = payload?.vaultState;
 
     let liquidation: Promise<any> = Promise.resolve();

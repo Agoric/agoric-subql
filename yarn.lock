@@ -3305,7 +3305,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/node-cosmos@npm:^4.2.1":
+"@subql/node-cosmos@npm:4.2.1":
   version: 4.2.1
   resolution: "@subql/node-cosmos@npm:4.2.1"
   dependencies:
@@ -4107,7 +4107,7 @@ __metadata:
   dependencies:
     "@cosmjs/stargate": "npm:^0.28.9"
     "@subql/cli": "npm:^5.4.0"
-    "@subql/node-cosmos": "npm:^4.2.1"
+    "@subql/node-cosmos": "npm:4.2.1"
     "@subql/testing": "npm:latest"
     "@subql/types-cosmos": "npm:^4.0.0"
     "@subql/utils": "npm:^2.17.0"
