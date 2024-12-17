@@ -1,0 +1,29 @@
+name: Liquidation Testing
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start A3P container
+        run: docker run -d -p 26657:26657 -p 1317:1317 -p 9090:9090 --name a3p ghcr.io/agoric/agoric-3-proposals:latest
+
+      - run: corepack enable
+        shell: bash
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Start subql indexer
+        run: yarn dev:ci
+        env:
+          AGORIC_NET: docker
