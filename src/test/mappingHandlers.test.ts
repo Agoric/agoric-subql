@@ -2,7 +2,10 @@
 import { subqlTest } from '@subql/testing';
 import {
   BoardAux,
+  OraclePrice,
   OraclePriceDaily,
+  PsmGovernance,
+  PsmMetrics,
   PsmMetricsDaily,
   ReserveAllocationMetrics,
   ReserveAllocationMetricsDaily,
@@ -235,11 +238,22 @@ oraclePriceDaily.typeInName = 'ATOM';
 oraclePriceDaily.typeOutName = 'USD';
 oraclePriceDaily.metricsCount = BigInt(1);
 
+const oraclePrice = new OraclePrice(
+  'ATOM-USD',
+  BigInt(506),
+  new Date('2024-12-09T23:03:17.564Z'),
+  'ATOM-USD',
+  BigInt(1000000),
+  BigInt(12010000),
+  'ATOM',
+  'USD',
+)
+
 subqlTest(
-  'oraclePriceDaily at block 506',
+  'oraclePrice at block 506',
   506,
   [],
-  [oraclePriceDaily],
+  [oraclePriceDaily, oraclePrice],
 
   'handleStateChangeEvent',
 );
@@ -260,4 +274,32 @@ psmMetricsDaily.totalAnchorProvidedLast = BigInt(0);
 psmMetricsDaily.totalMintedProvidedLast = BigInt(0);
 psmMetricsDaily.metricsCount = BigInt(1);
 
-subqlTest('psmMetricsDaily at block 35', 35, [], [psmMetricsDaily], 'handleStateChangeEvent');
+const psmMetrics = new PsmMetrics(
+  'published.psm.IST.USDC_axl.metrics',
+  BigInt(35),
+  new Date('2024-12-07T02:03:32.920Z'),
+  'USDC_axl',
+  'USDC_axl',
+  BigInt(0),
+  BigInt(0),
+  BigInt(0),
+  BigInt(0),
+  BigInt(0),
+);
+
+subqlTest('psmMetrics at block 35', 35, [], [psmMetricsDaily, psmMetrics], 'handleStateChangeEvent');
+
+const psmGovernance = new PsmGovernance(
+  'published.psm.IST.USDT_axl.governance',
+  BigInt(35),
+  new Date('2024-12-07T02:03:32.920Z'),
+  'USDT_axl',
+  'USDT_axl',
+  BigInt(1000000000),
+  BigInt(10000),
+  BigInt(0),
+  BigInt(10000),
+  BigInt(0),
+);
+
+subqlTest('psmGovernance at block 35', 35, [], [psmGovernance], 'handleStateChangeEvent');
