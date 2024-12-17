@@ -1,0 +1,48 @@
+name: 'Create Vault'
+description: 'Creates a vault and broadcasts an offer within an A3P container'
+inputs:
+  wantMinted:
+    description: 'Amount of currency to be minted by the vault'
+    required: true
+  giveCollateral:
+    description: 'Collateral amount to secure the minted currency'
+    required: true
+  userKey:
+    description: 'User key to authenticate the transaction'
+    required: true
+  agoricNet:
+    description: 'Agoric network configuration'
+    required: true
+  commandTimeout:
+    description: 'Maximum time in seconds for the command to complete'
+    required: true
+  containerName:
+    description: 'Name of the Docker container where the commands will be executed'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Create Vault
+      shell: bash
+      run: |
+        createVaultCommand="/usr/src/agoric-sdk/packages/agoric-cli/bin/agops vaults open --wantMinted \"${{ inputs.wantMinted }}\" --giveCollateral \"${{ inputs.giveCollateral }}\" > /tmp/want-ist.json"
+        echo "Executing create vault command in the container..."
+        output=$(docker exec ${{ inputs.containerName }} /bin/bash -c "env AGORIC_NET=${{ inputs.agoricNet }} timeout ${{ inputs.commandTimeout }} $createVaultCommand")
+
+        if echo "$output" | grep -q 'Error'; then
+          echo "Error found during vault creation: $output"
+          exit 1
+        fi
+    - name: Broadcast Offer
+      shell: bash
+      run: |
+        broadcastCommand="/usr/src/agoric-sdk/packages/agoric-cli/bin/agops perf satisfaction --executeOffer /tmp/want-ist.json --from \"${{ inputs.userKey }}\" --keyring-backend=test"
+        echo "Executing broadcast command in the container..."
+        output=$(docker exec ${{ inputs.containerName }} /bin/bash -c "env AGORIC_NET=${{ inputs.agoricNet }} timeout ${{ inputs.commandTimeout }} $broadcastCommand")
+
+        if echo "$output" | grep -q 'Error'; then
+          echo "Error found during broadcast: $output"
+          exit 1
+        else
+          echo "Broadcast successful: $output"

@@ -25,5 +25,37 @@ jobs:
 
       - name: Start subql indexer
         run: yarn dev:ci
-        env:
-          AGORIC_NET: docker
+
+      - name: Set ATOM Price to 12.34
+        run: |
+          docker exec a3p /usr/src/agoric-sdk/packages/agoric-cli/bin/agops oracle setPrice --keys gov1,gov2 --pair ATOM.USD --price 12.34 --keyring-backend=test
+
+      - name: Create Vault with 100 Minted and 15 Collateral
+        uses: ./.github/actions/createVault
+        with:
+          wantMinted: '100'
+          giveCollateral: '15'
+          userKey: 'user1'
+          agoricNet: 'local'
+          commandTimeout: '120'
+          containerName: 'a3p'
+
+      - name: Create Vault with 103 Minted and 15 Collateral
+        uses: ./.github/actions/createVault
+        with:
+          wantMinted: '103'
+          giveCollateral: '15'
+          userKey: 'user1'
+          agoricNet: 'local'
+          commandTimeout: '120'
+          containerName: 'a3p'
+
+      - name: Create Vault with 105 Minted and 15 Collateral
+        uses: ./.github/actions/createVault
+        with:
+          wantMinted: '105'
+          giveCollateral: '15'
+          userKey: 'user1'
+          agoricNet: 'local'
+          commandTimeout: '120'
+          containerName: 'a3p'
