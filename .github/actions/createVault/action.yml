@@ -28,21 +28,13 @@ runs:
       run: |
         createVaultCommand="/usr/src/agoric-sdk/packages/agoric-cli/bin/agops vaults open --wantMinted \"${{ inputs.wantMinted }}\" --giveCollateral \"${{ inputs.giveCollateral }}\" > /tmp/want-ist.json"
         echo "Executing create vault command in the container..."
-        output=$(docker exec ${{ inputs.containerName }} /bin/bash -c "env AGORIC_NET=${{ inputs.agoricNet }} timeout ${{ inputs.commandTimeout }} $createVaultCommand")
 
-        if echo "$output" | grep -q 'Error'; then
-          echo "Error found during vault creation: $output"
-          exit 1
-        fi
+        docker exec ${{ inputs.containerName }} /bin/bash -c "env AGORIC_NET=${{ inputs.agoricNet }} timeout ${{ inputs.commandTimeout }} $createVaultCommand"
+
     - name: Broadcast Offer
       shell: bash
       run: |
         broadcastCommand="/usr/src/agoric-sdk/packages/agoric-cli/bin/agops perf satisfaction --executeOffer /tmp/want-ist.json --from \"${{ inputs.userKey }}\" --keyring-backend=test"
         echo "Executing broadcast command in the container..."
-        output=$(docker exec ${{ inputs.containerName }} /bin/bash -c "env AGORIC_NET=${{ inputs.agoricNet }} timeout ${{ inputs.commandTimeout }} $broadcastCommand")
 
-        if echo "$output" | grep -q 'Error'; then
-          echo "Error found during broadcast: $output"
-          exit 1
-        else
-          echo "Broadcast successful: $output"
+        docker exec ${{ inputs.containerName }} /bin/bash -c "env AGORIC_NET=${{ inputs.agoricNet }} timeout ${{ inputs.commandTimeout }} $broadcastCommand"

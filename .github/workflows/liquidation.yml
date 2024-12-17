@@ -1,4 +1,4 @@
-name: Liquidation Testing
+name: Liquidation Indexing
 on:
   pull_request:
 
@@ -35,7 +35,7 @@ jobs:
         with:
           wantMinted: '100'
           giveCollateral: '15'
-          userKey: 'user1'
+          userKey: 'gov3'
           agoricNet: 'local'
           commandTimeout: '120'
           containerName: 'a3p'
@@ -45,7 +45,7 @@ jobs:
         with:
           wantMinted: '103'
           giveCollateral: '15'
-          userKey: 'user1'
+          userKey: 'gov3'
           agoricNet: 'local'
           commandTimeout: '120'
           containerName: 'a3p'
@@ -55,7 +55,44 @@ jobs:
         with:
           wantMinted: '105'
           giveCollateral: '15'
-          userKey: 'user1'
+          userKey: 'gov3'
           agoricNet: 'local'
           commandTimeout: '120'
           containerName: 'a3p'
+
+      - name: Place bid for 90IST
+        uses: ./.github/actions/placeBid
+        with:
+          fromAddress: 'gov1'
+          giveAmount: '90IST'
+          priceOrDiscount: '9'
+          commandType: 'by-price'
+          agoricNet: 'local'
+          commandTimeout: '120'
+          containerName: 'a3p'
+
+      - name: Place bid for 80IST
+        uses: ./.github/actions/placeBid
+        with:
+          fromAddress: 'gov1'
+          giveAmount: '80IST'
+          priceOrDiscount: '10'
+          commandType: 'by-discount'
+          agoricNet: 'local'
+          commandTimeout: '120'
+          containerName: 'a3p'
+
+      - name: Place bid for 150IST
+        uses: ./.github/actions/placeBid
+        with:
+          fromAddress: 'gov1'
+          giveAmount: '150IST'
+          priceOrDiscount: '15'
+          commandType: 'by-discount'
+          agoricNet: 'local'
+          commandTimeout: '120'
+          containerName: 'a3p'
+
+      - name: Set ATOM Price to 9.99
+        run: |
+          docker exec a3p /usr/src/agoric-sdk/packages/agoric-cli/bin/agops oracle setPrice --keys gov1,gov2 --pair ATOM.USD --price 9.99 --keyring-backend=test
