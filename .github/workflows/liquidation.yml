@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Start A3P container
-        run: docker run -d -p 26657:26657 -p 1317:1317 -p 9090:9090 --name a3p ghcr.io/agoric/agoric-3-proposals:latest
+        run: docker compose --profile ci up -d a3p
 
       - run: corepack enable
         shell: bash
@@ -24,75 +24,101 @@ jobs:
         run: yarn install
 
       - name: Start subql indexer
-        run: yarn dev:ci
+        env:
+          AGORIC_NET: ci
+        run: yarn dev
+
+      - name: Print initial logs of all containers
+        run: |
+          echo "Fetching initial logs for all containers..."
+          containers=$(docker ps --format '{{.ID}}')
+          for container in $containers; do
+            echo "Fetching initial logs for container $container..."
+            docker logs $container
+          done
 
       - name: Set ATOM Price to 12.34
-        run: |
-          docker exec a3p /usr/src/agoric-sdk/packages/agoric-cli/bin/agops oracle setPrice --keys gov1,gov2 --pair ATOM.USD --price 12.34 --keyring-backend=test
+        run: node .github/scripts/changePrice.mjs
+        env:
+          amount: 12.34
+          containerName: agd
+          agoricNet: local
+
+      - name: Get active vaults
+        run: node .github/scripts/getActiveVaults.mjs
+        env:
+          apiUrl: 'http://localhost:3000/'
+          expectedVaults: '7'
 
       - name: Create Vault with 100 Minted and 15 Collateral
-        uses: ./.github/actions/createVault
-        with:
+        run: node .github/scripts/createVault.mjs
+        env:
           wantMinted: '100'
           giveCollateral: '15'
           userKey: 'gov3'
           agoricNet: 'local'
           commandTimeout: '120'
-          containerName: 'a3p'
+          containerName: 'agd'
 
       - name: Create Vault with 103 Minted and 15 Collateral
-        uses: ./.github/actions/createVault
-        with:
+        run: node .github/scripts/createVault.mjs
+        env:
           wantMinted: '103'
           giveCollateral: '15'
           userKey: 'gov3'
           agoricNet: 'local'
           commandTimeout: '120'
-          containerName: 'a3p'
+          containerName: 'agd'
 
       - name: Create Vault with 105 Minted and 15 Collateral
-        uses: ./.github/actions/createVault
-        with:
+        run: node .github/scripts/createVault.mjs
+        env:
           wantMinted: '105'
           giveCollateral: '15'
           userKey: 'gov3'
           agoricNet: 'local'
           commandTimeout: '120'
-          containerName: 'a3p'
+          containerName: 'agd'
+
+      - name: Get active vaults
+        run: node .github/scripts/getActiveVaults.mjs
+        env:
+          apiUrl: 'http://localhost:3000/'
+          expectedVaults: 10
 
       - name: Place bid for 90IST
-        uses: ./.github/actions/placeBid
-        with:
+        run: node .github/scripts/placeBid.mjs
+        env:
           fromAddress: 'gov1'
           giveAmount: '90IST'
           priceOrDiscount: '9'
           commandType: 'by-price'
           agoricNet: 'local'
-          commandTimeout: '120'
-          containerName: 'a3p'
+          containerName: 'agd'
 
       - name: Place bid for 80IST
-        uses: ./.github/actions/placeBid
-        with:
+        run: node .github/scripts/placeBid.mjs
+        env:
           fromAddress: 'gov1'
           giveAmount: '80IST'
           priceOrDiscount: '10'
           commandType: 'by-discount'
           agoricNet: 'local'
-          commandTimeout: '120'
-          containerName: 'a3p'
+          containerName: 'agd'
 
       - name: Place bid for 150IST
-        uses: ./.github/actions/placeBid
-        with:
+        run: node .github/scripts/placeBid.mjs
+        env:
           fromAddress: 'gov1'
           giveAmount: '150IST'
           priceOrDiscount: '15'
           commandType: 'by-discount'
           agoricNet: 'local'
-          commandTimeout: '120'
-          containerName: 'a3p'
+          containerName: 'agd'
 
       - name: Set ATOM Price to 9.99
-        run: |
-          docker exec a3p /usr/src/agoric-sdk/packages/agoric-cli/bin/agops oracle setPrice --keys gov1,gov2 --pair ATOM.USD --price 9.99 --keyring-backend=test
+        run: node .github/scripts/changePrice.mjs
+        env:
+          amount: 9.99
+          containerName: agd
+          agoricNet: local

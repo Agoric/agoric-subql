@@ -14,11 +14,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    profiles:
+      - default
+      - ci
 
   subquery-node:
     image: subquerynetwork/subql-node-cosmos:v4.2.1
     depends_on:
-      'postgres':
+      postgres:
         condition: service_healthy
     restart: always
     environment:
@@ -30,27 +33,28 @@ services:
     volumes:
       - ./:/app
     command:
-      - ${SUB_COMMAND:-} # set SUB_COMMAND env variable to "test" to run tests
+      - ${SUB_COMMAND:-}
       - -f=/app
       - --db-schema=app
       - --workers=4
       - --batch-size=30
-      # - --log-level=debug
-      # - --unfinalized-blocks=true
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://subquery-node:3000/ready']
       interval: 3s
       timeout: 5s
       retries: 10
+    profiles:
+      - default
+      - ci
 
   graphql-engine:
     image: onfinality/subql-query:v2.13.0
     ports:
       - 3000:3000
     depends_on:
-      'postgres':
+      postgres:
         condition: service_healthy
-      'subquery-node':
+      subquery-node:
         condition: service_healthy
     restart: always
     environment:
@@ -63,3 +67,21 @@ services:
       - --name=app
       - --playground
       - --indexer=http://subquery-node:3000
+    profiles:
+      - default
+      - ci
+
+  a3p:
+    image: ghcr.io/agoric/agoric-3-proposals:latest
+    container_name: agd
+    ports:
+      - 26657:26657
+      - 1317:1317
+      - 9090:9090
+    restart: always
+    profiles:
+      - ci
+
+networks:
+  default:
+    driver: bridge

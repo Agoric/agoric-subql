@@ -7,8 +7,7 @@
     "build": "subql build",
     "codegen": "subql codegen",
     "start:docker": "docker-compose pull && docker-compose up --remove-orphans",
-    "dev": "subql codegen && subql build && docker-compose pull && docker-compose up --remove-orphans",
-    "dev:ci": "AGORIC_NET=docker subql codegen && subql build && docker compose pull && docker compose up --remove-orphans --detach",
+    "dev": "subql codegen && subql build && docker compose pull && docker compose --profile default up --remove-orphans --detach",
     "prepack": "rm -rf dist && npm run build",
     "test": "subql build && subql-node-cosmos test",
     "prettier:check": "prettier --list-different . --print-width 120",
@@ -28,6 +27,7 @@
     "@subql/cli": "^5.4.0",
     "@subql/node-cosmos": "4.2.1",
     "@subql/testing": "latest",
+    "execa": "^9.5.2",
     "prettier": "^3.4.2",
     "starknet": "6.11.0",
     "typescript": "^5.7.2"
