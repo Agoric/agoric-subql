@@ -247,7 +247,7 @@ const oraclePrice = new OraclePrice(
   BigInt(12010000),
   'ATOM',
   'USD',
-)
+);
 
 subqlTest(
   'oraclePrice at block 506',
