@@ -30,6 +30,7 @@
     "@subql/testing": "latest",
     "execa": "^9.5.2",
     "prettier": "^3.4.2",
+    "ses": "^1.10.0",
     "starknet": "6.11.0",
     "typescript": "^5.7.2"
   },

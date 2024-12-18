@@ -4332,6 +4332,7 @@ __metadata:
     js-sha256: "npm:^0.11.0"
     pino: "npm:^7.8.0"
     prettier: "npm:^3.4.2"
+    ses: "npm:^1.10.0"
     starknet: "npm:6.11.0"
     typescript: "npm:^5.7.2"
   languageName: unknown
