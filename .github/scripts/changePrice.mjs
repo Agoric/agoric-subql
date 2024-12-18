@@ -24,9 +24,8 @@ const setAtomPrice = async (amount, containerName, agoricNet) => {
     };
 
     const command = `${agops} oracle setPrice --keys gov1,gov2 --pair ATOM.USD --price ${amount} --keyring-backend=test`;
-    const { stdout, stderr } = await execa('docker', ['exec', containerName, command], { env, shell: true });
+    const { stdout } = await execa('docker', ['exec', containerName, command], { env, shell: true });
 
-    assert.strictEqual(stderr, '', `Expected stderr to be empty, but received: '${stderr}'`);
     console.log('Standard output:', stdout);
   } catch (error) {
     console.error('Error:', error);

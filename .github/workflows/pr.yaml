@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       a3p:
-        image: ghcr.io/agoric/agoric-3-proposals@sha256:644e09bf041e5588570ff9a49e6129cc468e9c8458417541027e8532cb91083b
+        image: ghcr.io/agoric/agoric-3-proposals:use-upgrade-17
         ports:
           - 26657:26657
       postgres:

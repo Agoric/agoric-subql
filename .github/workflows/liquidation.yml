@@ -48,7 +48,7 @@ jobs:
         run: node .github/scripts/getActiveVaults.mjs
         env:
           apiUrl: 'http://localhost:3000/'
-          expectedVaults: '7'
+          expectedVaults: 7
 
       - name: Create Vault with 100 Minted and 15 Collateral
         run: node .github/scripts/createVault.mjs
@@ -122,3 +122,14 @@ jobs:
           amount: 9.99
           containerName: agd
           agoricNet: local
+
+      - name: Check liquidation indexing
+        run: node .github/scripts/checkLiquidation.mjs
+        env:
+          apiUrl: 'http://localhost:3000/'
+
+      - name: Get active vaults
+        run: node .github/scripts/getActiveVaults.mjs
+        env:
+          apiUrl: 'http://localhost:3000/'
+          expectedVaults: 7
