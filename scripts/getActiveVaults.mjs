@@ -1,4 +1,5 @@
-import fetch from 'node-fetch';
+#! /usr/bin/env node
+/* eslint-env node */
 
 const delay = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));

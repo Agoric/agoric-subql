@@ -38,98 +38,98 @@ jobs:
           done
 
       - name: Set ATOM Price to 12.34
-        run: node .github/scripts/changePrice.mjs
+        run: ./scripts/changePrice.mjs
         env:
           amount: 12.34
           containerName: agd
-          agoricNet: local
+          AGORIC_NET: local
 
       - name: Get active vaults
-        run: node .github/scripts/getActiveVaults.mjs
+        run: ./scripts/getActiveVaults.mjs
         env:
           apiUrl: 'http://localhost:3000/'
           expectedVaults: 7
 
       - name: Create Vault with 100 Minted and 15 Collateral
-        run: node .github/scripts/createVault.mjs
+        run: ./scripts/createVault.mjs
         env:
           wantMinted: '100'
           giveCollateral: '15'
           userKey: 'gov3'
-          agoricNet: 'local'
+          AGORIC_NET: 'local'
           commandTimeout: '120'
           containerName: 'agd'
 
       - name: Create Vault with 103 Minted and 15 Collateral
-        run: node .github/scripts/createVault.mjs
+        run: ./scripts/createVault.mjs
         env:
           wantMinted: '103'
           giveCollateral: '15'
           userKey: 'gov3'
-          agoricNet: 'local'
+          AGORIC_NET: 'local'
           commandTimeout: '120'
           containerName: 'agd'
 
       - name: Create Vault with 105 Minted and 15 Collateral
-        run: node .github/scripts/createVault.mjs
+        run: ./scripts/createVault.mjs
         env:
           wantMinted: '105'
           giveCollateral: '15'
           userKey: 'gov3'
-          agoricNet: 'local'
+          AGORIC_NET: 'local'
           commandTimeout: '120'
           containerName: 'agd'
 
       - name: Get active vaults
-        run: node .github/scripts/getActiveVaults.mjs
+        run: ./scripts/getActiveVaults.mjs
         env:
           apiUrl: 'http://localhost:3000/'
           expectedVaults: 10
 
       - name: Place bid for 90IST
-        run: node .github/scripts/placeBid.mjs
+        run: ./scripts/placeBid.mjs
         env:
           fromAddress: 'gov1'
           giveAmount: '90IST'
           priceOrDiscount: '9'
           commandType: 'by-price'
-          agoricNet: 'local'
+          AGORIC_NET: 'local'
           containerName: 'agd'
 
       - name: Place bid for 80IST
-        run: node .github/scripts/placeBid.mjs
+        run: ./scripts/placeBid.mjs
         env:
           fromAddress: 'gov1'
           giveAmount: '80IST'
           priceOrDiscount: '10'
           commandType: 'by-discount'
-          agoricNet: 'local'
+          AGORIC_NET: 'local'
           containerName: 'agd'
 
       - name: Place bid for 150IST
-        run: node .github/scripts/placeBid.mjs
+        run: ./scripts/placeBid.mjs
         env:
           fromAddress: 'gov1'
           giveAmount: '150IST'
           priceOrDiscount: '15'
           commandType: 'by-discount'
-          agoricNet: 'local'
+          AGORIC_NET: 'local'
           containerName: 'agd'
 
       - name: Set ATOM Price to 9.99
-        run: node .github/scripts/changePrice.mjs
+        run: ./scripts/changePrice.mjs
         env:
           amount: 9.99
           containerName: agd
-          agoricNet: local
+          AGORIC_NET: local
 
       - name: Check liquidation indexing
-        run: node .github/scripts/checkLiquidation.mjs
+        run: ./scripts/checkLiquidation.mjs
         env:
           apiUrl: 'http://localhost:3000/'
 
       - name: Get active vaults
-        run: node .github/scripts/getActiveVaults.mjs
+        run: ./scripts/getActiveVaults.mjs
         env:
           apiUrl: 'http://localhost:3000/'
           expectedVaults: 7
