@@ -37,6 +37,9 @@ jobs:
             docker logs $container
           done
 
+      - name: Set Execute Permission for All Scripts
+        run: chmod +x ./scripts/*.mjs
+
       - name: Set ATOM Price to 12.34
         run: ./scripts/changePrice.mjs
         env:
