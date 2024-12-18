@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-import 'ses';
+import './lockdown.mjs';
 import { execa } from 'execa';
 import { assertAllDefined } from '@agoric/internal';
 

@@ -4321,6 +4321,7 @@ __metadata:
   dependencies:
     "@agoric/internal": "npm:0.4.0-u18.0"
     "@cosmjs/stargate": "npm:^0.28.9"
+    "@endo/eventual-send": "npm:^1.2.8"
     "@subql/cli": "npm:^5.4.0"
     "@subql/node-cosmos": "npm:^4.2.1"
     "@subql/testing": "npm:latest"
