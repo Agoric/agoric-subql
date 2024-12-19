@@ -1,0 +1,138 @@
+name: Liquidation Indexing
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start A3P container
+        run: docker compose --profile ci up -d a3p
+
+      - run: corepack enable
+        shell: bash
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Start subql indexer
+        env:
+          AGORIC_NET: ci
+        run: yarn dev
+
+      - name: Print initial logs of all containers
+        run: |
+          echo "Fetching initial logs for all containers..."
+          containers=$(docker ps --format '{{.ID}}')
+          for container in $containers; do
+            echo "Fetching initial logs for container $container..."
+            docker logs $container
+          done
+
+      - name: Set Execute Permission for All Scripts
+        run: chmod +x ./scripts/*.mjs
+
+      - name: Set ATOM Price to 12.34
+        run: ./scripts/changePrice.mjs
+        env:
+          amount: 12.34
+          containerName: agd
+          AGORIC_NET: local
+
+      - name: Get active vaults
+        run: ./scripts/getActiveVaults.mjs
+        env:
+          apiUrl: 'http://localhost:3000/'
+          expectedVaults: 7
+
+      - name: Create Vault with 100 Minted and 15 Collateral
+        run: ./scripts/createVault.mjs
+        env:
+          wantMinted: '100'
+          giveCollateral: '15'
+          userKey: 'gov3'
+          AGORIC_NET: 'local'
+          commandTimeout: '120'
+          containerName: 'agd'
+
+      - name: Create Vault with 103 Minted and 15 Collateral
+        run: ./scripts/createVault.mjs
+        env:
+          wantMinted: '103'
+          giveCollateral: '15'
+          userKey: 'gov3'
+          AGORIC_NET: 'local'
+          commandTimeout: '120'
+          containerName: 'agd'
+
+      - name: Create Vault with 105 Minted and 15 Collateral
+        run: ./scripts/createVault.mjs
+        env:
+          wantMinted: '105'
+          giveCollateral: '15'
+          userKey: 'gov3'
+          AGORIC_NET: 'local'
+          commandTimeout: '120'
+          containerName: 'agd'
+
+      - name: Get active vaults
+        run: ./scripts/getActiveVaults.mjs
+        env:
+          apiUrl: 'http://localhost:3000/'
+          expectedVaults: 10
+
+      - name: Place bid for 90IST
+        run: ./scripts/placeBid.mjs
+        env:
+          fromAddress: 'gov1'
+          giveAmount: '90IST'
+          priceOrDiscount: '9'
+          commandType: 'by-price'
+          AGORIC_NET: 'local'
+          containerName: 'agd'
+
+      - name: Place bid for 80IST
+        run: ./scripts/placeBid.mjs
+        env:
+          fromAddress: 'gov1'
+          giveAmount: '80IST'
+          priceOrDiscount: '10'
+          commandType: 'by-discount'
+          AGORIC_NET: 'local'
+          containerName: 'agd'
+
+      - name: Place bid for 150IST
+        run: ./scripts/placeBid.mjs
+        env:
+          fromAddress: 'gov1'
+          giveAmount: '150IST'
+          priceOrDiscount: '15'
+          commandType: 'by-discount'
+          AGORIC_NET: 'local'
+          containerName: 'agd'
+
+      - name: Set ATOM Price to 9.99
+        run: ./scripts/changePrice.mjs
+        env:
+          amount: 9.99
+          containerName: agd
+          AGORIC_NET: local
+
+      - name: Check liquidation indexing
+        run: ./scripts/checkLiquidation.mjs
+        env:
+          apiUrl: 'http://localhost:3000/'
+
+      - name: Get active vaults
+        run: ./scripts/getActiveVaults.mjs
+        env:
+          apiUrl: 'http://localhost:3000/'
+          expectedVaults: 7

@@ -44,6 +44,12 @@ const networkConfig = {
     chaintypes: chainTypesU18,
     startBlock: 1,
   },
+  ci: {
+    chainId: 'agoriclocal',
+    endpoint: ['http://a3p:26657'],
+    chaintypes: chainTypesU18,
+    startBlock: 1,
+  },
   main: {
     chainId: 'agoric-3',
     endpoint: ['https://main-a.rpc.agoric.net:443'],
