@@ -76,7 +76,7 @@ const validate = async ({ apiUrl, maxRetries, retryDuration, expectations, filte
 
       for (const key of Object.keys(expectations)) {
         for (let i = 0; i < nodes.length; i++) {
-          equal(nodes[i][key], expectations[i].key);
+          equal(nodes[i][key], expectations[key][i]);
         }
       }
 
