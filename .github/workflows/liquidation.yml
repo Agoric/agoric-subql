@@ -37,9 +37,6 @@ jobs:
             docker logs $container
           done
 
-      - name: Set Execute Permission for All Scripts
-        run: chmod +x ./scripts/*.mjs
-
       - name: Set ATOM Price to 12.34
         run: ./scripts/changePrice.mjs
         env:
@@ -50,7 +47,6 @@ jobs:
       - name: Get active vaults
         run: ./scripts/getActiveVaults.mjs
         env:
-          apiUrl: 'http://localhost:3000/'
           expectedVaults: 7
 
       - name: Create Vault with 100 Minted and 15 Collateral
@@ -86,7 +82,6 @@ jobs:
       - name: Get active vaults
         run: ./scripts/getActiveVaults.mjs
         env:
-          apiUrl: 'http://localhost:3000/'
           expectedVaults: 10
 
       - name: Place bid for 90IST
@@ -128,11 +123,8 @@ jobs:
 
       - name: Check liquidation indexing
         run: ./scripts/checkLiquidation.mjs
-        env:
-          apiUrl: 'http://localhost:3000/'
 
       - name: Get active vaults
         run: ./scripts/getActiveVaults.mjs
         env:
-          apiUrl: 'http://localhost:3000/'
           expectedVaults: 7

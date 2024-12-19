@@ -1,0 +1,79 @@
+name: Vaults and Reserve Indexing
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start A3P container
+        run: docker compose --profile ci up -d a3p
+
+      - run: corepack enable
+        shell: bash
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Start subql indexer
+        env:
+          AGORIC_NET: ci
+        run: yarn dev
+
+      - name: Print initial logs of all containers
+        run: |
+          echo "Fetching initial logs for all containers..."
+          containers=$(docker ps --format '{{.ID}}')
+          for container in $containers; do
+            echo "Fetching initial logs for container $container..."
+            docker logs $container
+          done
+
+      # We tried delays of 10, 20, and 30 seconds, but a 60-second delay is the most efficient
+      # and ensures that the server is fully ready, without causing any issues.
+      - name: Wait for GraphQL server
+        run: sleep 60
+
+      - name: Test VaultManagerGovernance
+        run: ./scripts/validateData.mjs
+        env:
+          entity: vaultManagerGovernances
+          blockHeight: 1212
+
+      - name: Test VaultManagerMetrics
+        run: ./scripts/validateData.mjs
+        env:
+          entity: vaultManagerMetrics
+          blockHeight: 1212
+
+      - name: Test VaultManagerMetricsDaily
+        run: ./scripts/validateData.mjs
+        env:
+          entity: vaultManagerMetricsDailies
+          blockHeight: 1212
+
+      - name: Test ReserveMetrics
+        run: ./scripts/validateData.mjs
+        env:
+          entity: reserveMetrics
+          blockHeight: 1212
+
+      - name: Test ReserveAllocationMetrics
+        run: ./scripts/validateData.mjs
+        env:
+          entity: reserveAllocationMetrics
+          blockHeight: 1212
+
+      - name: Test ReserveAllocationMetricsDaily
+        run: ./scripts/validateData.mjs
+        env:
+          entity: reserveAllocationMetricsDailies
+          blockHeight: 1212

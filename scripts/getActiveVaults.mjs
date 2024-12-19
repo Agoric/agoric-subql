@@ -50,7 +50,6 @@ const getActiveVaults = async (apiUrl, expectedVaults) => {
   process.exit(1);
 };
 
-const apiUrl = process.env.apiUrl;
 const expectedVaults = parseInt(process.env.expectedVaults, 10);
-
+const apiUrl = 'http://localhost:3000/';
 getActiveVaults(apiUrl, expectedVaults);

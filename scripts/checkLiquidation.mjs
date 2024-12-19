@@ -93,7 +93,7 @@ const validate = async ({ apiUrl, maxRetries, retryDuration, expectations, filte
   process.exit(1);
 };
 
-const apiUrl = process.env.API_URL || 'http://localhost:3000/';
+const apiUrl = 'http://localhost:3000/';
 console.log(`API URL set to: ${apiUrl}`);
 
 try {
@@ -118,4 +118,5 @@ try {
   console.log('Validation successful for liquidated vaults.');
 } catch (error) {
   console.error('Validation failed:', error);
+  process.exit(1);
 }
