@@ -20,4 +20,5 @@ try {
   console.log('Standard output:', stdout);
 } catch (error) {
   console.error('Error:', error);
+  process.exit(1);
 }
