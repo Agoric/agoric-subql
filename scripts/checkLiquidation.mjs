@@ -118,4 +118,5 @@ try {
   console.log('Validation successful for liquidated vaults.');
 } catch (error) {
   console.error('Validation failed:', error);
+  process.exit(1);
 }
