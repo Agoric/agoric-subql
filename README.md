@@ -111,14 +111,49 @@ The fastest way to get support is by [searching our documentation](https://acade
 
 ### Locally
 
-1. Start up an A3P instance:
+1. Start up an A3P instance
 
-```sh
-docker run -p 26657:26657 -p 1317:1317 -p 9090:9090 ghcr.io/agoric/agoric-3-proposals:latest
-```
+   ```sh
+   docker run -p 26657:26657 -p 1317:1317 -p 9090:9090 ghcr.io/agoric/agoric-3-proposals:latest
+   ```
 
-2. Browse it with [vstorage viewer](https://vstorage.agoric.net/?endpoint=http%3A%2F%2Flocalhost%3A26657)
+2. Start up the Indexer
+   After the A3P instance is up and running, initiate the indexer with the following command:
 
-3. Update tests to verify some observations you've made in the vstorage viewer
+   ```sh
+   AGORIC_NET=docker yarn dev
+   ```
 
-4. Run `yarn test`
+3. Accessing the GraphQL Interface
+   Once the indexer is operational, access the GraphQL interface to query indexed data:
+
+   - Open a web browser and navigate to http://localhost:3000.
+   - Use the provided interface to write and execute your GraphQL queries.
+
+### Troubleshooting the Indexer
+
+If you encounter issues with the indexer:
+
+- Check the logs for any errors or warnings that might indicate what is wrong. Use the command:
+
+  ```sh
+  docker logs <container_id>
+  ```
+
+  Replace <container_id> with the actual ID of your Docker container involved in indexing.
+
+- If restarting the indexer is necessary, first delete the `.data` folder in the root directory to avoid conflicts or corruption of data:
+
+  ```sh
+  rm -rf .data
+  ```
+
+## Testing
+
+When a PR is created, tests associated with indexing are automatically triggered in the following workflows:
+
+- `.github/workflows/pr.yaml`
+- `.github/workflows/liquidation.yaml`
+- `.github/workflows/vaults-and-reserve-metrics-testing.yml`
+
+These tests are scheduled to run daily and can also be manually triggered at any time from the GitHub Actions tab on GitHub.
