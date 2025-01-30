@@ -330,7 +330,7 @@ type FastUsdcTransaction @entity {
   sourceAddress: String! @index
   eud: String!
   usdcAmount: BigInt!
-  status: FastUsdcTransactionStatus! @index
+  status: FastUsdcTransactionStatus!
   contractFee: BigInt
   poolFee: BigInt
 }
