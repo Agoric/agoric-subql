@@ -327,10 +327,60 @@ enum FastUsdcTransactionStatus {
 
 type FastUsdcTransaction @entity {
   id: ID!
+  """
+  EVM address from which the USCD funds originated
+  """
   sourceAddress: String! @index
+  """
+  EIP-155 chain ID from which the USCD funds originated
+  """
+  sourceChainId: Int! @index
+  """
+  Unix epoch timestamp on the source chain.
+  Note that different chains have different clocks but they should be equivalant to precision of minutes.
+  """
+  sourceBlockTimestamp: BigInt! @index
+  """
+  The CAIP-10 or Cosmos Bech32 address to receive the USDC
+  """
   eud: String!
+  """
+  The amount of USDC to send (in 6 decimal format)
+  """
   usdcAmount: BigInt!
+  """
+  The last reported status of the transaction
+  """
   status: FastUsdcTransactionStatus! @index
+  """
+  The block height of the Agoric chain at which the current status was recorded
+  """
+  statusHeight: Int
+  """
+  Any risks identified during transaction processing
+  """
+  risksIdentified: [String]
+  """
+  Payment to the contract
+  """
   contractFee: BigInt
+  """
+  Payment to the liquidity pool underwriting the transaction
+  """
   poolFee: BigInt
+
+  # The following heights are of key states of the happy path. Unhappy outcomes require investigation with other tools.
+
+  """
+  The block height of the Agoric chain at which the transaction was Observed
+  """
+  heightObserved: Int
+  """
+  The block height of the Agoric chain at which the transaction was Advanced to the EUD
+  """
+  heightAdvanced: Int
+  """
+  The block height of the Agoric chain at which funds were Disbursed back to the LP
+  """
+  heightDisbursed: Int
 }

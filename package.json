@@ -23,28 +23,33 @@
   "author": "Agoric OpCo",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@agoric/fast-usdc": "0.2.0-u18.0",
-    "@agoric/inter-protocol": "0.17.0-u18.6",
-    "@agoric/internal": "0.4.0-u18.1",
-    "@agoric/smart-wallet": "0.5.4-u18.5",
+    "@agoric/fast-usdc": "0.1.1-dev-7186681.0",
+    "@agoric/inter-protocol": "0.16.2-dev-7186681.0",
+    "@agoric/internal": "0.3.3-dev-7186681.0",
+    "@agoric/smart-wallet": "patch:@agoric/smart-wallet@npm%3A0.5.4-dev-7186681.0#~/.yarn/patches/@agoric-smart-wallet-npm-0.5.4-dev-7186681.0-de3e51742e.patch",
     "@cosmjs/stargate": "^0.32.4",
     "@endo/eventual-send": "^1.2.8",
-    "@subql/cli": "^5.4.0",
-    "@subql/node-cosmos": "^4.3.0",
+    "@subql/cli": "^5.6.0",
+    "@subql/node-cosmos": "^4.5.1",
     "@subql/testing": "latest",
     "execa": "^9.5.2",
     "prettier": "^3.4.2",
-    "ses": "^1.10.0",
+    "ses": "^1.11.0",
     "starknet": "6.21.0",
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@subql/types-cosmos": "^4.0.0",
-    "@subql/utils": "^2.17.0",
+    "@agoric/cosmic-proto": "0.4.1-dev-7186681.0",
+    "@subql/types-cosmos": "^4.1.0",
+    "@subql/utils": "^2.18.0",
     "@types/node": "^17.0.45",
     "bech32": "^2.0.0",
     "js-sha256": "^0.11.0",
     "pino": "^7.11.0"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.6.0",
+  "resolutions": {
+    "@agoric/smart-wallet@npm:0.5.4-dev-7186681.0+7186681": "patch:@agoric/smart-wallet@npm%3A0.5.4-dev-7186681.0#~/.yarn/patches/@agoric-smart-wallet-npm-0.5.4-dev-7186681.0-de3e51742e.patch",
+    "@subql/x-cosmology-telescope@npm:^1.4.14": "patch:@subql/x-cosmology-telescope@npm%3A1.4.14#~/.yarn/patches/@subql-x-cosmology-telescope-npm-1.4.14-f7014b8f33.patch"
+  }
 }

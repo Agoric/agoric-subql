@@ -1,0 +1,13 @@
+diff --git a/src/types.ts b/src/types.ts
+index 019bcc212dc9aa4e63e0e7847d8b72cb02bc7404..e37fdbe34050a021fd7328100ad56d0e301449c4 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -13,6 +13,8 @@ import type { OfferSpec } from './offers.js';
+ 
+ declare const CapDataShape: unique symbol;
+ 
++type InvitationDetails = {description: string};
++
+ // Match the type in Zoe, which can't be imported because it's ambient.
+ // This omits the parameters that aren't used in this module.
+ type Invitation = Payment<'set', InvitationDetails>;

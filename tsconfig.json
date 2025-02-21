@@ -6,6 +6,9 @@
     "declaration": true,
     "importHelpers": true,
     "resolveJsonModule": true,
+    "strict": true,
+    // UNTIL https://github.com/Agoric/agoric-sdk/issues/11038
+    "noImplicitAny": false,
     "module": "commonjs",
     "outDir": "dist",
     "rootDir": "src",

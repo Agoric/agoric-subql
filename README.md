@@ -33,6 +33,10 @@ Sources of latency:
 
 ## Developing
 
+### IDE
+
+For your IDE to resolve all the files, run `yarn codegen && yarn build`.
+
 ### With A3P
 
 1. Start up an A3P instance

@@ -1,18 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": false,
     // @agoric/cosmic-proto only works in ESM but the @subql/cli only works in CJS.
     // This allows them to work together, but only after the `codegen` step.
     "module": "preserve",
     "moduleResolution": "bundler",
     // UNTIL package-json-type and ejs packages have types
-    "skipLibCheck": true,
-    "lib": ["es2021"]
-  },
-  "exclude": [
-    // generated code has typecheck error
-    "src/types/proto-interfaces/**"
-  ]
+    "skipLibCheck": true
+  }
 }
