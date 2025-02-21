@@ -353,6 +353,10 @@ type FastUsdcTransaction @entity {
   """
   status: FastUsdcTransactionStatus! @index
   """
+  The block height of the Agoric chain at which the current status was recorded
+  """
+  statusHeight: Int
+  """
   Any risks identified during transaction processing
   """
   risksIdentified: [String]
@@ -364,4 +368,19 @@ type FastUsdcTransaction @entity {
   Payment to the liquidity pool underwriting the transaction
   """
   poolFee: BigInt
+
+  # The following heights are of key states of the happy path. Unhappy outcomes require investigation with other tools.
+
+  """
+  The block height of the Agoric chain at which the transaction was Observed
+  """
+  heightObserved: Int
+  """
+  The block height of the Agoric chain at which the transaction was Advanced to the EUD
+  """
+  heightAdvanced: Int
+  """
+  The block height of the Agoric chain at which funds were Disbursed back to the LP
+  """
+  heightDisbursed: Int
 }
