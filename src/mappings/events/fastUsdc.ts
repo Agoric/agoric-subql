@@ -7,7 +7,7 @@ import { FastUsdcTransaction, FastUsdcTransactionStatus } from '../../types';
 import { decodeAddressHook } from '@agoric/cosmic-proto/address-hooks.js';
 
 export const transactionEventKit = (block: CosmosBlock, data: StreamCell, module: string, path: string) => {
-  async function saveTransaction(payload: TransactionRecord): Promise<Promise<any>[]> {
+  async function saveTransaction(payload: TransactionRecord): Promise<Promise<void>[]> {
     logger.info(`saveTransaction ${JSON.stringify(payload)}`);
     // extract the segment after the last period
     const id = path.split('.').pop();
@@ -15,7 +15,10 @@ export const transactionEventKit = (block: CosmosBlock, data: StreamCell, module
 
     const t = await FastUsdcTransaction.get(id);
     if (!t) {
-      assert(payload.status === FastUsdcTransactionStatus.OBSERVED, 'new status without a previous OBSERVED');
+      if (payload.status !== FastUsdcTransactionStatus.OBSERVED) {
+        console.error('new status ${payload.status} for ${id} without a previous OBSERVED');
+        return [];
+      }
       assert(payload['evidence'], 'implied by OBSERVED');
       assert.equal(payload.evidence.txHash, id, 'txHash must match path');
       const decoded = decodeAddressHook(payload.evidence.aux.recipientAddress);
