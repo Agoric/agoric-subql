@@ -1,14 +1,6 @@
 import type { tendermint37 } from '@cosmjs/tendermint-rpc';
-import { CosmosEvent, CosmosMessage } from '@subql/types-cosmos';
-import { BundleInstall, IBCChannel, IBCTransfer, StateChangeEvent, TransferType } from '../types';
-import {
-  b64decode,
-  extractStoragePath,
-  getAddressFromUint8Array,
-  getEscrowAddress,
-  getStateChangeModule,
-  resolveBrandNamesAndValues,
-} from './utils';
+import { CosmosEvent } from '@subql/types-cosmos';
+import { b64decode, extractStoragePath, getStateChangeModule, resolveBrandNamesAndValues } from './utils';
 
 import type { StreamCell } from '@agoric/internal/src/lib-chainStorage';
 import type { CapData } from '@endo/marshal';
@@ -16,146 +8,19 @@ import assert from 'assert';
 import {
   EVENT_TYPES,
   KEY_KEY,
-  PACKET_DATA_KEY,
-  PACKET_DST_CHANNEL_KEY,
-  PACKET_DST_PORT_KEY,
-  PACKET_SRC_CHANNEL_KEY,
-  PACKET_SRC_PORT_KEY,
   STORE_KEY,
   STORE_NAME_KEY,
   SUBKEY_KEY,
-  TRANSFER_PORT_VALUE,
   UNPROVED_VALUE_KEY,
   VALUE_KEY,
   VSTORAGE_VALUE,
 } from './constants';
-import { boardAuxEventKit } from './events/boardAux';
 import { transactionEventKit } from './events/fastUsdc';
-import { priceFeedEventKit } from './events/priceFeed';
-import { psmEventKit } from './events/psm';
-import { reservesEventKit } from './events/reserves';
-import { vaultsEventKit } from './events/vaults';
 
 // @ts-ignore
 BigInt.prototype.toJSON = function () {
   return this.toString();
 };
-
-async function saveIbcChannel(channelName: string) {
-  const generatedEscrowAddress = getEscrowAddress(TRANSFER_PORT_VALUE, channelName);
-
-  const channelRecord = new IBCChannel(channelName, channelName, generatedEscrowAddress);
-  return channelRecord.save();
-}
-
-export async function handleIbcSendPacketEvent(cosmosEvent: CosmosEvent): Promise<void> {
-  const { event, block, tx } = cosmosEvent as CosmosEvent & { event: tendermint37.Event };
-  if (event.type != EVENT_TYPES.SEND_PACKET) {
-    logger.warn('Not valid send_packet event.');
-    return;
-  }
-
-  const packetSrcPortAttr = event.attributes.find((a) => a.key === PACKET_SRC_PORT_KEY);
-  if (!packetSrcPortAttr || packetSrcPortAttr.value !== TRANSFER_PORT_VALUE) {
-    logger.warn('packet_src_port is not transfer');
-    return;
-  }
-  const packetDataAttr = event.attributes.find((a) => a.key === PACKET_DATA_KEY);
-  if (!packetDataAttr) {
-    logger.warn('No packet data attribute found');
-    return;
-  }
-
-  const packetSrcChannelAttr = event.attributes.find((a) => a.key === PACKET_SRC_CHANNEL_KEY);
-  if (!packetSrcChannelAttr) {
-    logger.warn('No packet source channel found');
-    return;
-  }
-  const { amount, denom, receiver, sender } = JSON.parse(packetDataAttr.value);
-  const sourceChannel = packetSrcChannelAttr.value;
-
-  const ibcChannel = saveIbcChannel(sourceChannel);
-
-  const transferRecord = new IBCTransfer(
-    tx.hash,
-    block.header.time as Date,
-    BigInt(block.header.height),
-    packetSrcChannelAttr.value,
-    sender,
-    receiver,
-    denom,
-    amount,
-    TransferType.SEND,
-  );
-  await Promise.allSettled([transferRecord.save(), ibcChannel]);
-}
-
-export async function handleIbcReceivePacketEvent(cosmosEvent: CosmosEvent): Promise<void> {
-  const { event, block, tx } = cosmosEvent as CosmosEvent & { event: tendermint37.Event };
-  if (event.type != EVENT_TYPES.RECEIVE_PACKET) {
-    logger.warn('Not valid recv_packet event.');
-    return;
-  }
-
-  const packetDataAttr = event.attributes.find((a) => a.key === PACKET_DATA_KEY);
-  if (!packetDataAttr) {
-    logger.warn('No packet data attribute found');
-    return;
-  }
-
-  const packetDestPortAttr = event.attributes.find((a) => a.key === PACKET_DST_PORT_KEY);
-  if (!packetDestPortAttr || packetDestPortAttr.value !== TRANSFER_PORT_VALUE) {
-    logger.warn('packet_dest_port is not transfer');
-    return;
-  }
-
-  const packetDstChannelAttr = event.attributes.find((a) => a.key === PACKET_DST_CHANNEL_KEY);
-  if (!packetDstChannelAttr) {
-    logger.warn('No packet destination channel found');
-    return;
-  }
-  const { amount, denom, receiver, sender } = JSON.parse(packetDataAttr.value);
-  const destinationChannel = packetDstChannelAttr.value;
-
-  const ibcChannel = saveIbcChannel(destinationChannel);
-
-  const transferRecord = new IBCTransfer(
-    tx.hash,
-    block.header.time as Date,
-    BigInt(block.header.height),
-    destinationChannel,
-    sender,
-    receiver,
-    denom,
-    amount,
-    TransferType.RECEIVE,
-  );
-
-  await Promise.allSettled([transferRecord.save(), ibcChannel]);
-}
-
-export async function handleBundleInstallMessage(message: CosmosMessage): Promise<void> {
-  const { msg, block, tx } = message;
-
-  if (msg.typeUrl !== '/agoric.swingset.MsgInstallBundle') {
-    logger.warn('message type is not /agoric.swingset.MsgInstallBundle');
-    return;
-  }
-
-  // JSON.stringify converts the object from Uint8Array to readable string
-  const { uncompressedSize, compressedBundle, bundle } = JSON.parse(JSON.stringify(msg.decodedMsg));
-  const bundleRecord = new BundleInstall(
-    tx.hash,
-    BigInt(block.header.height),
-    block.header.time as Date,
-    BigInt(uncompressedSize),
-    bundle || '',
-    compressedBundle || '',
-    getAddressFromUint8Array(msg.decodedMsg.submitter),
-  );
-
-  await bundleRecord.save();
-}
 
 export async function handleStateChangeEvent(cosmosEvent: CosmosEvent & { event: tendermint37.Event }): Promise<void> {
   const { event, block } = cosmosEvent;
@@ -209,46 +74,12 @@ export async function handleStateChangeEvent(cosmosEvent: CosmosEvent & { event:
 
   const recordSaves: (Promise<void> | undefined)[] = [];
 
-  async function saveStateEvent(idx: number, value: CapData<unknown>, payload: unknown) {
-    const record = new StateChangeEvent(
-      `${data.blockHeight}:${cosmosEvent.idx}:${idx}`,
-      BigInt(data.blockHeight),
-      block.block.header.time as Date,
-      module,
-      path,
-      idx,
-      JSON.stringify(value.slots),
-      JSON.stringify(payload),
-    );
-
-    recordSaves.push(record.save());
-  }
-
   // XXX constructs a new one of each of these when none might match the path
-  const psmKit = psmEventKit(block, data, module, path);
-  const boardKit = boardAuxEventKit(block, data, module, path);
-  const priceKit = priceFeedEventKit(block, data, module, path);
-  const vaultKit = vaultsEventKit(block, data, module, path);
-  const reserveKit = reservesEventKit(block, data, module, path);
   const fastUsdcKit = transactionEventKit(block, data, module, path);
 
   const regexFunctionMap = [
     { regex: /^published\.fastUsdc\.txns\./, function: fastUsdcKit.saveTransaction },
-    { regex: /^published\.priceFeed\..+price_feed$/, function: priceKit.savePriceFeed },
-    { regex: /^published\.psm\..+\.metrics$/, function: psmKit.savePsmMetrics },
-    { regex: /^published\.psm\..+\.governance$/, function: psmKit.savePsmGovernance },
-    {
-      regex: /^published\.vaultFactory\.managers\.manager[0-9]+\.metrics$/,
-      function: vaultKit.saveVaultManagerMetrics,
-    },
-    {
-      regex: /^published\.vaultFactory\.managers\.manager[0-9]+\.governance$/,
-      function: vaultKit.saveVaultManagerGovernance,
-    },
-    { regex: /^published\.reserve\.metrics$/, function: reserveKit.saveReserveMetrics },
-    { regex: /^published\.wallet\..+\.current$/, function: vaultKit.saveWallets },
-    { regex: /^published\.vaultFactory\.managers\.manager[0-9]+\.vaults\.vault[0-9]+$/, function: vaultKit.saveVaults },
-    { regex: /^published\.boardAux\.board[0-9]+$/, function: boardKit.saveBoardAux },
+    // Many others omitted that are on the main instance but not the internal one
   ];
 
   for (let idx = 0; idx < data.values.length; idx++) {
@@ -271,11 +102,11 @@ export async function handleStateChangeEvent(cosmosEvent: CosmosEvent & { event:
         if (path.match(regex)) {
           // XXX await in loop, TODO simplify by using Promise.allSettled in handlers
           // recordSaves.push(action(payload));
-          recordSaves.push(...(await action(payload)));
+          const promises = await action(payload);
+          recordSaves.push(...promises);
           break;
         }
       }
-      saveStateEvent(idx, value, payload);
     } catch (e) {
       logger.error(`Error for path: ${path}`);
       logger.error(e);
