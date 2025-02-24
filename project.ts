@@ -61,7 +61,8 @@ const networkConfig = {
     chainId: 'agoric-3',
     endpoint: ['https://main-a.rpc.agoric.net:443'],
     chaintypes: chainTypesU18,
-    startBlock: 2115669,
+    /** First Fast USDC transaction on main */
+    startBlock: 18454947,
   },
 };
 
@@ -70,7 +71,10 @@ const networkKey = process.env.AGORIC_NET || 'main';
 const startBlock = {
   local: 1,
   docker: 1,
-  main: 2115669,
+  /** Eval of FUSD-Start */
+  startFusdc: 18396254,
+  /** First Fast USDC transaction on main */
+  main: 18454947,
   /** Launch of Inter Protocol */
   upgrade8: 7179262,
 };
@@ -80,8 +84,8 @@ const startBlockKey = process.env.SUBQL_START_BLOCK || networkKey;
 const project: CosmosProject = {
   specVersion: '1.0.0',
   version: '0.0.1',
-  name: 'agoric-starter',
-  description: 'This project can be use as a starting point for developing your Cosmos agoric based SubQuery project',
+  name: 'agoric-internal',
+  description: "OpCo's indexer and query service for internal use",
   runner: {
     node: {
       name: '@subql/node-cosmos',

@@ -121,3 +121,20 @@ When a PR is created, tests associated with indexing are automatically triggered
 - `.github/workflows/vaults-and-reserve-metrics-testing.yml`
 
 These tests are scheduled to run daily and can also be manually triggered at any time from the GitHub Actions tab on GitHub.
+
+## Deploying
+
+OnFinality has staging and production instances.
+
+Once it's in Production, you can find the indexer at https://indexer.agoric.net.
+
+For staging, they don't provide an explorer. Instead you can use a [generic GraphQL playground](https://hygraph.com/graphql-playground) and enter a custom schema URL pointing to the staging instance ("Staging query url" in Onfinality's UI).
+
+```gql
+# For example, https://api.subquery.network/sq/agoric-labs/internal__YWdvc
+query {
+  fastUsdcTransactions {
+    totalCount
+  }
+}
+```
