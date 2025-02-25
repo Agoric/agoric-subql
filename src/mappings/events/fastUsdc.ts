@@ -51,6 +51,9 @@ export const transactionEventKit = (block: CosmosBlock, data: StreamCell, module
     switch (payload.status) {
       case FastUsdcTransactionStatus.OBSERVED:
         throw new Error('OBSERVED for extant transaction');
+      case FastUsdcTransactionStatus.ADVANCED:
+        t.heightDisbursed = block.header.height;
+        break;
       case FastUsdcTransactionStatus.DISBURSED:
         t.contractFee = payload.split.ContractFee.value;
         t.poolFee = payload.split.PoolFee.value;
