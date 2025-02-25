@@ -4862,6 +4862,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/text-encoding@npm:^0":
+  version: 0.0.40
+  resolution: "@types/text-encoding@npm:0.0.40"
+  checksum: 10c0/ae0a8e6896ae847e0ccf297d623df2a1cdf4180e8f3a3542c56ea56194d49a6d3f18a60170f786a9ba33d2644e7d9caf089ec286fd762765ce4d426f3eac4892
+  languageName: node
+  linkType: hard
+
 "@types/validator@npm:^13.11.8, @types/validator@npm:^13.7.1":
   version: 13.12.2
   resolution: "@types/validator@npm:13.12.2"
@@ -5190,6 +5197,7 @@ __metadata:
     "@subql/types-cosmos": "npm:^4.1.0"
     "@subql/utils": "npm:^2.18.0"
     "@types/node": "npm:^17.0.45"
+    "@types/text-encoding": "npm:^0"
     bech32: "npm:^2.0.0"
     execa: "npm:^9.5.2"
     js-sha256: "npm:^0.11.0"
@@ -5197,6 +5205,7 @@ __metadata:
     prettier: "npm:^3.4.2"
     ses: "npm:^1.11.0"
     starknet: "npm:6.21.0"
+    text-encoding: "npm:^0.7.0"
     typescript: "npm:^5.7.3"
   languageName: unknown
   linkType: soft
@@ -11206,6 +11215,13 @@ __metadata:
     glob: "npm:^7.1.4"
     minimatch: "npm:^3.0.4"
   checksum: 10c0/019d33d81adff3f9f1bfcff18125fb2d3c65564f437d9be539270ee74b994986abb8260c7c2ce90e8f30162178b09dbbce33c6389273afac4f36069c48521f57
+  languageName: node
+  linkType: hard
+
+"text-encoding@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "text-encoding@npm:0.7.0"
+  checksum: 10c0/6c20f5d19f996501677cc60b79bc4af550f840b426eacc5f67bd2bd5a7a7a058ab58679f851e0afee879aaaaf7fdb95cfe4de35ab29f9b34f9ce2a7b8de9bacb
   languageName: node
   linkType: hard
 

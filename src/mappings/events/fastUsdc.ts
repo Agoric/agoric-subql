@@ -6,6 +6,12 @@ import { FastUsdcTransaction, FastUsdcTransactionStatus } from '../../types';
 // @ts-ignore not there until after codegen, but codegen won't complete if this errors
 import { decodeAddressHook } from '@agoric/cosmic-proto/address-hooks.js';
 
+// Polyfill because SubQL CLI's webpack doesn't include it and fails when configured to.
+// `decodeAddressHook` needs it but not until it's called so this polyfill after is okay.
+import { TextDecoder, TextEncoder } from 'text-encoding';
+global.TextEncoder ??= TextEncoder;
+global.TextDecoder ??= TextDecoder;
+
 export const transactionEventKit = (block: CosmosBlock, data: StreamCell, module: string, path: string) => {
   async function saveTransaction(payload: TransactionRecord): Promise<Promise<void>[]> {
     logger.info(`saveTransaction ${JSON.stringify(payload)}`);
