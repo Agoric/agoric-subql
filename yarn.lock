@@ -4154,9 +4154,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/cli@npm:^5.6.0":
-  version: 5.6.0
-  resolution: "@subql/cli@npm:5.6.0"
+"@subql/cli@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "@subql/cli@npm:5.7.0"
   dependencies:
     "@inquirer/prompts": "npm:^5.3.6"
     "@oclif/core": "npm:^2.16.0"
@@ -4178,7 +4178,7 @@ __metadata:
     ts-loader: "npm:^9.5.1"
     ts-node: "npm:^10.9.2"
     tslib: "npm:^2.6.3"
-    typescript: "npm:^5.5.4"
+    typescript: "npm:^5.7.3"
     update-notifier: "npm:^5.1.0"
     webpack: "npm:^5.94.0"
     webpack-merge: "npm:^6.0.1"
@@ -4187,7 +4187,7 @@ __metadata:
     yaml-loader: "npm:^0.8.1"
   bin:
     subql: ./bin/run
-  checksum: 10c0/181ca0c9af3707fda21727ef4c7481336e6cc439e5fee37ffb22f6def690677227809a41ea467a2aced9c4e7088ebb5fd8994f54363f7bb979e34bcb1c2e6af5
+  checksum: 10c0/674ebb26f96ac24dfde2aad37f87fe9211c7d31fc3fed3282567bd4c37e08129c07155c6641dea7e39dcfe2b3d06016a5c5149664a0af03cdace4342d231f940
   languageName: node
   linkType: hard
 
@@ -5191,7 +5191,7 @@ __metadata:
     "@agoric/smart-wallet": "patch:@agoric/smart-wallet@npm%3A0.5.4-dev-7186681.0#~/.yarn/patches/@agoric-smart-wallet-npm-0.5.4-dev-7186681.0-de3e51742e.patch"
     "@cosmjs/stargate": "npm:^0.32.4"
     "@endo/eventual-send": "npm:^1.2.8"
-    "@subql/cli": "npm:^5.6.0"
+    "@subql/cli": "npm:^5.7.0"
     "@subql/node-cosmos": "npm:^4.5.1"
     "@subql/testing": "npm:latest"
     "@subql/types-cosmos": "npm:^4.1.0"
@@ -11532,7 +11532,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.1.6 - 5.7.x, typescript@npm:^5.4.5, typescript@npm:^5.5.4, typescript@npm:^5.7.3":
+"typescript@npm:5.1.6 - 5.7.x, typescript@npm:^5.4.5, typescript@npm:^5.7.3":
   version: 5.7.3
   resolution: "typescript@npm:5.7.3"
   bin:
@@ -11542,7 +11542,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.1.6 - 5.7.x#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.4#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.7.3#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A5.1.6 - 5.7.x#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.7.3#optional!builtin<compat/typescript>":
   version: 5.7.3
   resolution: "typescript@patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"
   bin:

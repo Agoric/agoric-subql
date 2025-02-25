@@ -29,7 +29,7 @@
     "@agoric/smart-wallet": "patch:@agoric/smart-wallet@npm%3A0.5.4-dev-7186681.0#~/.yarn/patches/@agoric-smart-wallet-npm-0.5.4-dev-7186681.0-de3e51742e.patch",
     "@cosmjs/stargate": "^0.32.4",
     "@endo/eventual-send": "^1.2.8",
-    "@subql/cli": "^5.6.0",
+    "@subql/cli": "^5.7.0",
     "@subql/node-cosmos": "^4.5.1",
     "@subql/testing": "latest",
     "@types/text-encoding": "^0",
