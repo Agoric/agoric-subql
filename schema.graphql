@@ -313,24 +313,3 @@ type BundleInstall @entity {
   compressedBundle: String!
   submitter: String!
 }
-
-enum FastUsdcTransactionStatus {
-  OBSERVED
-  ADVANCING
-  ADVANCED
-  ADVANCE_FAILED
-  FORWARDING
-  FORWARDED
-  FORWARD_FAILED
-  DISBURSED
-}
-
-type FastUsdcTransaction @entity {
-  id: ID!
-  sourceAddress: String! @index
-  eud: String!
-  usdcAmount: BigInt!
-  status: FastUsdcTransactionStatus! @index
-  contractFee: BigInt
-  poolFee: BigInt
-}

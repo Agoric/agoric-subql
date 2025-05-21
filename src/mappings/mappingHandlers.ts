@@ -12,7 +12,6 @@ import {
 
 import type { StreamCell } from '@agoric/internal/src/lib-chainStorage';
 import type { CapData } from '@endo/marshal';
-import assert from 'assert';
 import {
   EVENT_TYPES,
   KEY_KEY,
@@ -30,7 +29,6 @@ import {
   VSTORAGE_VALUE,
 } from './constants';
 import { boardAuxEventKit } from './events/boardAux';
-import { transactionEventKit } from './events/fastUsdc';
 import { priceFeedEventKit } from './events/priceFeed';
 import { psmEventKit } from './events/psm';
 import { reservesEventKit } from './events/reserves';
@@ -230,10 +228,8 @@ export async function handleStateChangeEvent(cosmosEvent: CosmosEvent & { event:
   const priceKit = priceFeedEventKit(block, data, module, path);
   const vaultKit = vaultsEventKit(block, data, module, path);
   const reserveKit = reservesEventKit(block, data, module, path);
-  const fastUsdcKit = transactionEventKit(block, data, module, path);
 
   const regexFunctionMap = [
-    { regex: /^published\.fastUsdc\.txns\./, function: fastUsdcKit.saveTransaction },
     { regex: /^published\.priceFeed\..+price_feed$/, function: priceKit.savePriceFeed },
     { regex: /^published\.psm\..+\.metrics$/, function: psmKit.savePsmMetrics },
     { regex: /^published\.psm\..+\.governance$/, function: psmKit.savePsmGovernance },
