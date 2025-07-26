@@ -47,6 +47,8 @@ export const vaultsEventKit = (block: CosmosBlock, data: StreamCell, module: str
       for (let i = 0; i < payload.offerToPublicSubscriberPaths.length; i++) {
         const [_, { vault: vaultId }] = payload.offerToPublicSubscriberPaths[i] as [string, { vault: string }];
 
+        if (!vaultId)
+          continue
         let vault = await Vault.get(vaultId);
         if (!vault) {
           vault = new Vault(vaultId, BigInt(data.blockHeight), block.block.header.time as Date, wallet.id);
